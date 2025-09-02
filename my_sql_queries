@@ -1,0 +1,88 @@
+-- 1) create the database (utf8mb4 for emojis & full unicode)
+CREATE DATABASE IF NOT EXISTS edugenie_db
+  DEFAULT CHARACTER SET utf8mb4
+  DEFAULT COLLATE utf8mb4_unicode_ci;
+
+USE edugenie_db;
+
+-- 2) create a dedicated MySQL user 
+CREATE USER IF NOT EXISTS 'edugenie'@'localhost' IDENTIFIED BY '012345';
+
+-- 3) grant necessary privileges to that user
+GRANT ALL PRIVILEGES ON edugenie_db.* TO 'edugenie'@'localhost';
+FLUSH PRIVILEGES;
+
+-- 4) users table
+CREATE TABLE IF NOT EXISTS users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(150) NOT NULL,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,           -- store hashed password
+  is_premium TINYINT(1) DEFAULT 0,          -- 0 = false, 1 = true
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_users_email (email)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 5) flashcards table
+CREATE TABLE IF NOT EXISTS flashcards (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  question TEXT NOT NULL,
+  answer TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  INDEX idx_flashcards_user_id (user_id),
+  INDEX idx_flashcards_created_at (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 6) payments table (for IntaSend records / invoices)
+CREATE TABLE IF NOT EXISTS payments (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT,                                -- nullable until the payment is linked
+  intasend_invoice_id VARCHAR(255),           -- store provider invoice id
+  status VARCHAR(50),                         -- e.g., pending, paid, failed, cancelled
+  amount DECIMAL(12,2) DEFAULT 0.00,
+  currency VARCHAR(10) DEFAULT 'KES',
+  metadata JSON NULL,                         -- store provider metadata (e.g., {"user_id":123})
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+  INDEX idx_payments_intasend_invoice_id (intasend_invoice_id),
+  INDEX idx_payments_user_id (user_id),
+  INDEX idx_payments_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 7) webhook logs for debugging / audit
+CREATE TABLE IF NOT EXISTS webhook_logs (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  provider VARCHAR(100),
+  event JSON,
+  received_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  processed TINYINT(1) DEFAULT 0,
+  notes TEXT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- SAMPLE DATA
+-- Insert an example non-privileged user (password must be hashed normally; here shown as placeholder)
+INSERT INTO users (name, email, password, is_premium)
+VALUES ('Test Student', 'test@example.com', '$pbkdf2-sha256$...hashed...', 0);
+
+-- Insert sample flashcard for user id = 1
+INSERT INTO flashcards (user_id, question, answer)
+VALUES (1, 'What is the capital of France?', 'Paris');
+
+-- Example payment record (pending)
+INSERT INTO payments (user_id, intasend_invoice_id, status, amount, currency, metadata)
+VALUES (1, 'IS_INV_123456', 'pending', 2000.00, 'KES', JSON_OBJECT('user_id', 1, 'plan', 'monthly_pro'));
+
+-- Example of a user
+USE edugenie_db;
+-- Free account
+INSERT INTO users (name, email, password, is_premium, created_at)
+VALUES ('Free User', 'free@example.com', 'hashedpassword1', 0, NOW());
+
+-- Premium account
+INSERT INTO users (name, email, password, is_premium, created_at)
+VALUES ('Premium User', 'premium@example.com', 'hashedpassword2', 1, NOW());
+
+SELECT id, name, email, is_premium, created_at FROM users;

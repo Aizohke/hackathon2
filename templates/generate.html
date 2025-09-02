@@ -1,0 +1,39 @@
+<!-- templates/generate.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Generate Flashcards - Flipwise</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Flipwise: Study Buddy</h1>
+      <nav>
+        <a href="{{ url_for('index') }}">Home</a>
+      </nav>
+    </header>
+
+    <main class="generator">
+      <h2>Transform your study notes into interactive flashcards</h2>
+
+      <div class="input-area">
+        <textarea id="study-notes" placeholder="Input your text here..."></textarea>
+        <button id="generate-btn">Generate Flashcards</button>
+      </div>
+
+      <div style="text-align:center;margin-bottom:10px;">
+        <button id="upgrade-pro-btn">Upgrade to Pro</button>
+      </div>
+
+      <div id="flashcards-container" class="flashcards">
+        <!-- Flashcards will be generated here -->
+      </div>
+    </main>
+  </div>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

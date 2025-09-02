@@ -1,0 +1,82 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Flipwise Study Buddy</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo-title">
+        <img src="{{ url_for('static', filename='image.png') }}" alt="Flipwise Logo" class="logo">
+        <h1>Flipwise</h1>
+      </div>
+      <div class="tabs">
+        <div class="tab" onclick="toggleTab('history')">History</div>
+        <div class="tab" onclick="toggleTab('signup')">Sign Up</div>
+        <div class="tab" onclick="toggleTab('login')">Login</div>
+      </div>
+    </header>
+
+    <div class="tab-content" id="history-content">
+      <h2>Your Study History</h2>
+      <p>Your past study sessions will appear here.</p>
+    </div>
+
+    <div class="tab-content" id="signup-content">
+      <h2>Create an Account</h2>
+      <form id="signup-form">
+        <input name="name" type="text" placeholder="Name" required>
+        <input name="email" type="email" placeholder="Email" required>
+        <input name="password" type="password" placeholder="Password" required>
+        <button type="submit">Sign Up</button>
+      </form>
+    </div>
+
+    <div class="tab-content" id="login-content">
+      <h2>Login</h2>
+      <form id="login-form">
+        <input name="email" type="email" placeholder="Email" required>
+        <input name="password" type="password" placeholder="Password" required>
+        <button type="submit">Login</button>
+      </form>
+      <div style="text-align:center;margin-top:10px;">
+        <button id="upgrade-btn">Upgrade to Pro</button>
+      </div>
+    </div>
+
+    <main class="hero">
+      <p>Your personal study buddy</p>
+      <h2>Transform your study notes into interactive flashcards</h2>
+      <button onclick="window.location.href='/generate'">Start AI Study Buddy</button>
+    </main>
+
+    <section class="about">
+      <h2>About Flipwise Study Buddy</h2>
+      <div class="about-content">
+        <div class="about-item">
+          <h3>Learn about Flipwise Study Buddy</h3>
+          <p>An AI-powered tool that helps you study more efficiently.</p>
+        </div>
+        <div class="about-item">
+          <h3>How to use Study Buddy</h3>
+          <p>Just paste your notes and let AI generate flashcards for you.</p>
+        </div>
+        <div class="about-item">
+          <h3>Information about the creator</h3>
+          <p>Created for the hackathon focusing on SDG goals.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>Flipwise © 2025</p>
+    </footer>
+  </div>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
