@@ -96,4 +96,4 @@ Run the Flask app and test:
 * **Free Account** → email: `free@example.com` | password: `1234`
 * **Premium Account** → email: `premium@example.com` | password: `1234`
 
-
+The working link for my website on render is https://flipwise-8nrs.onrender.com
